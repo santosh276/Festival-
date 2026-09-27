@@ -6479,6 +6479,33 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                 const dayOfWeek = d.getDay();
                 const festivals = [];
 
+                const formatDualTitle = (baseName, tithiObj) => {
+                    if (!tithiObj) return baseName;
+                    const monthNames = ["Chaitra", "Vaishakha", "Jyeshtha", "Ashadha", "Shravana", "Bhadrapada", "Ashwina", "Kartika", "Margashirsha", "Pausha", "Magha", "Phalguna"];
+                    const amantaIdx = amantaMonthIdx;
+                    let purnimantaIdx = amantaIdx;
+                    if (!tithiObj.isShukla) {
+                        purnimantaIdx = isAdhik ? amantaIdx : (amantaIdx + 1) % 12;
+                    }
+                    const amantaStr = monthNames[amantaIdx] + " (Amanta)";
+                    const purnimantaStr = monthNames[purnimantaIdx] + " (Purnimanta)";
+                    const pakshaVal = tithiObj.isShukla ? "Shukla" : "Krishna";
+                    const tithiNames = ["Pratipada", "Dwitiya", "Tritiya", "Chaturthi", "Panchami", "Shashthi", "Saptami", "Ashtami", "Navami", "Dashami", "Ekadashi", "Dwadashi", "Trayodashi", "Chaturdashi", tithiObj.isShukla ? "Purnima" : "Amavasya"];
+                    const tithiVal = tithiNames[(tithiObj.tithiInPaksha - 1) % 15];
+
+                    if (tithiObj.isShukla) {
+                        return baseName + " - " + monthNames[amantaIdx] + " Shukla " + tithiVal + " (Identical in Purnimanta & Amanta)";
+                    } else {
+                        return baseName + " - " + purnimantaStr + " / " + amantaStr + ", " + pakshaVal + " " + tithiVal;
+                    }
+                };
+
+                // Dynamic Dual-Convention Subtitles for Festival Cards & Modals
+
+                // Dynamic Dual-Convention Subtitles for Festival Cards & Modals
+
+                // Dynamic Dual-Convention Subtitles for Festival Cards & Modals
+
                 // 3. RECURRING MONTHLY VRATS
                 if (udaya.tithiInPaksha === 11) {
                     const ekadashiNames = [
@@ -6529,7 +6556,7 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                 }
 
                 if (touchesMadhyahna(4, true) && mMadhyahna !== 5) {
-                    festivals.push("Vinayaka Chaturthi");
+                    festivals.push(formatDualTitle("Vinayaka Chaturthi", madhyahna));
                 }
 
                 if (!nishita.isShukla && nishita.tithiInPaksha === 14 && mNishita !== 11) {
@@ -6610,7 +6637,7 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mUdaya === 0 && udaya.isShukla && udaya.tithiInPaksha === 13) festivals.push("Mahavira Janma Kalyanak (भगवान महावीर जन्म कल्याणक / Mahavira Jayanti)");
                     if (mMadhyahna === 0 && touchesMadhyahna(3, true)) festivals.push("Matsya Jayanti", "Gauri Puja");
                     if (mUdaya === 0 && udaya.isShukla && udaya.tithiInPaksha === 8) festivals.push("Ashokashtami (Rukuna Ratha Yatra)", "Chaitra Durgashtami");
-                    if (mMadhyahna === 0 && touchesMadhyahna(9, true)) festivals.push("Sri Rama Navami (ଶ୍ରୀରାମ ନବମୀ)");
+                    if (mMadhyahna === 0 && touchesMadhyahna(9, true)) festivals.push(formatDualTitle("Sri Rama Navami", madhyahna));
                     if (mUdaya === 0 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Chaitra Purnima", "Hanuman Jayanti");
 
                     // Month 1: Vaishakha
@@ -6668,7 +6695,7 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 1) festivals.push("Kartika Brata / Habisa Begins");
                     if (mPradosha === 7 && !pradosha.isShukla && pradosha.tithiInPaksha === 13) festivals.push("Dhanteras (Dhanvantari Jayanti)");
                     if (mNishita === 7 && !nishita.isShukla && nishita.tithiInPaksha === 14) festivals.push("Naraka Chaturdashi", "Kali Puja");
-                    if (mPradosha === 7 && !pradosha.isShukla && pradosha.tithiInPaksha === 15) festivals.push("Deepavali (ଦୀପାବଳି)", "Lakshmi Puja", "Paya Shraddha");
+                    if (mPradosha === 7 && !pradosha.isShukla && pradosha.tithiInPaksha === 15) festivals.push(formatDualTitle("Deepavali / Lakshmi Puja", pradosha), "Paya Shraddha");
                     if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 1) festivals.push("Govardhan Puja", "Annakoot");
                     if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 2) festivals.push("Bhai Dooj (ଭାଇଦୂଜ / ଯମ ଦ୍ୱିତୀୟା)");
                     if (mPradosha === 7 && pradosha.isShukla && pradosha.tithiInPaksha === 6) festivals.push("Chhath Puja (ଛଠ୍ ପୂଜା)");
@@ -6695,7 +6722,7 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mUdaya === 10 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Magha Purnima");
 
                     // Month 11: Phalguna
-                    if (mNishita === 11 && !nishita.isShukla && nishita.tithiInPaksha === 14) festivals.push("Maha Shivaratri (ମହା ଶିବରାତ୍ରି / ଜାଗର ଯାତ୍ରା)");
+                    if (mNishita === 11 && !nishita.isShukla && nishita.tithiInPaksha === 14) festivals.push(formatDualTitle("Maha Shivaratri", nishita));
                     if (mPradosha === 11 && pradosha.isShukla && pradosha.tithiInPaksha === 15) festivals.push("Holika Dahan");
                     if (mUdaya === 11 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Dola Purnima / Dola Yatra (ଦୋଳ ପୂର୍ଣ୍ଣିମା / ଦୋଳ ଯାତ୍ରା)", "Sri Chaitanya Jayanti", "Gaura Purnima (গৌর পূর্ণিমা / ISKCON Appearance Day)");
                 }
@@ -6741,6 +6768,19 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                         festivals.push("Pahili Raja (ପହିଲି ରଜ)");
                     }
                 }
+
+
+
+                // --- 9. SIKH, JAIN & BUDDHIST FESTIVALS ---
+                if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Guru Nanak Jayanti / Gurpurab");
+                if (mUdaya === 9 && udaya.isShukla && udaya.tithiInPaksha === 7) festivals.push("Guru Gobind Singh Jayanti");
+
+                // Paryushana Parva (Bhadrapada Krishna 12)
+                if (mUdaya === 5 && !udaya.isShukla && udaya.tithiInPaksha === 12) festivals.push("Paryushana Parva Begins");
+                if (mUdaya === 5 && udaya.isShukla && (udaya.tithiInPaksha === 4 || udaya.tithiInPaksha === 5)) festivals.push("Samvatsari / Kshamavani");
+
+                // Mahavira Nirvana (Diwali Amavasya)
+                if (mUdaya === 7 && !udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Mahavira Nirvana");
 
                 return [...new Set(festivals)];
             } catch (e) {
