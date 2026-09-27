@@ -2837,6 +2837,11 @@ const FestivalsVratsView = ({data: r}) => {
             return fName.includes("Surya") ? "occurs during Amavasya" : "occurs during Purnima";
         }
 
+        const nonHindu = ["Eid", "Ramadan", "Shab", "Muharram", "Mawlid", "Ashura", "Bakrid", "Qadr", "Easter", "Friday", "Maundy", "Palm", "Ash", "Ascension", "Pentecost", "Christmas", "Stephen", "Republic", "Independence", "Gandhi", "Ambedkar", "Netaji", "Parakram", "Youth", "Vivekananda", "May Day", "Teachers", "Children", "Constitution", "Martyrs", "Science", "Kargil", "Sports", "Hindi", "Ekta", "Kisan"];
+        if (nonHindu.some(k => fName.toLowerCase().includes(k.toLowerCase()))) {
+            return "Fixed or Astronomical Date";
+        }
+
         try {
             // Evaluated at local sunrise of the festival day (True Hindu Civil Day basis)
             const obs = new window.Astronomy.Observer(lat || 28.6139, lng || 77.2090, 0);
@@ -3076,12 +3081,13 @@ const renderUpcomingTithis = () => {
                                     s.jsx("span", { className: "monthly-fest-date-num", children: item.dayNum }),
                                     s.jsx("span", { className: "monthly-fest-date-sub", children: item.dateStr.split(', ')[1] })
                                 ]}),
-                                s.jsx("div", { className: "monthly-fest-names-area", children:
-                                    item.festivals.map((fName, fIdx) => s.jsxs("span", { key: fIdx, className: "monthly-fest-badge", children: [
+                                s.jsxs("div", { className: "monthly-fest-names-area", style: { display: "flex", flexDirection: "column", gap: "4px" }, children: [
+                                    s.jsx("div", { children: item.festivals.map((fName, fIdx) => s.jsxs("span", { key: fIdx, className: "monthly-fest-badge", children: [
                                         fIdx > 0 ? " • " : "🚩 ",
                                         fName
-                                    ] }))
-                                }),
+                                    ] })) }),
+                                    s.jsx("div", { style: { fontSize: "0.75rem", color: "#6B7280", marginTop: "2px" }, children: getFestivalContextStr(item.festivals[0] || "", new Date(item.date), r.location?.latitude, r.location?.longitude) })
+                                ]}),
                                 isToday && s.jsx("span", { className: "monthly-fest-today-tag", children: "SELECTED" }),
                                 !isPast && s.jsx("button", {
                                     type: "button",
@@ -3261,98 +3267,6 @@ const renderUpcomingTithis = () => {
                     ]
                 }),
 
-                // --- PURNIMANTA VS AMANTA DUAL CALENDAR ENGINE UI ---
-                s.jsxs("div", {
-                    style: {
-                        background: "linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85))",
-                        backdropFilter: "blur(16px)",
-                        border: "1px solid rgba(255, 255, 255, 0.6)",
-                        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
-                        borderRadius: "20px",
-                        padding: "20px",
-                        margin: "0 16px 24px 16px",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "16px",
-                        position: "relative",
-                        overflow: "hidden"
-                    },
-                    children: [
-                        s.jsx("div", {
-                            style: { position: "absolute", top: "-50%", left: "-50%", width: "200%", height: "200%", background: "linear-gradient(to bottom right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%)", transform: "rotate(30deg)", pointerEvents: "none" }
-                        }),
-                        s.jsxs("div", {
-                            style: { display: "flex", alignItems: "center", gap: "10px", zIndex: 1 },
-                            children: [
-                                s.jsx("span", { style: { fontSize: "24px" }, children: "🌗" }),
-                                s.jsx("h3", { style: { margin: 0, fontSize: "1.1rem", fontWeight: "700", color: "#1F2937" }, children: "Current Lunar Month Conventions" })
-                            ]
-                        }),
-                        s.jsx("p", {
-                            style: { margin: 0, fontSize: "0.85rem", color: "#6B7280", lineHeight: "1.4", zIndex: 1 },
-                            children: "In India, two primary lunar month ending traditions exist. During Krishna Paksha, the Purnimanta month is exactly 1 month ahead. During Shukla Paksha, both traditions share identical month names."
-                        }),
-                        s.jsxs("div", {
-                            style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px", zIndex: 1 },
-                            children: [
-                                // Purnimanta Card
-                                s.jsxs("div", {
-                                    style: { background: "#FFFBEB", borderRadius: "16px", padding: "16px", border: "1px solid #FDE68A", position: "relative" },
-                                    children: [
-                                        s.jsxs("div", {
-                                            style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" },
-                                            children: [
-                                                s.jsx("span", { style: { fontSize: "20px" }, children: "🌕" }),
-                                                s.jsx("h4", { style: { margin: 0, fontWeight: "700", color: "#92400E", fontSize: "1rem" }, children: "PURNIMANTA" })
-                                            ]
-                                        }),
-                                        s.jsxs("div", {
-                                            style: { display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px" },
-                                            children: [
-                                                "UP", "Bihar", "Raj", "MP", "Haryana", "Punjab", "HP", "Odisha"
-                                            ].map(state => s.jsx("span", { key: state, style: { background: "#FEF3C7", color: "#B45309", fontSize: "0.7rem", fontWeight: "600", padding: "2px 8px", borderRadius: "10px" }, children: state }))
-                                        }),
-                                        s.jsxs("div", {
-                                            style: { background: "#FFFFFF", padding: "10px 14px", borderRadius: "10px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" },
-                                            children: [
-                                                s.jsx("div", { style: { fontSize: "0.75rem", color: "#9CA3AF", textTransform: "uppercase", fontWeight: "600", letterSpacing: "0.05em", marginBottom: "2px" }, children: "Current Month" }),
-                                                s.jsx("div", { style: { fontSize: "1.05rem", fontWeight: "700", color: "#111827" }, children: r.samvatDetails?.chandramasa?.purnimanta || "N/A" }),
-                                                s.jsx("div", { style: { fontSize: "0.85rem", color: "#4B5563", marginTop: "4px" }, children: `${r.tithi?.paksha || ''} Paksha, ${r.tithi?.name || ''}` })
-                                            ]
-                                        })
-                                    ]
-                                }),
-                                // Amanta Card
-                                s.jsxs("div", {
-                                    style: { background: "#F3F4F6", borderRadius: "16px", padding: "16px", border: "1px solid #E5E7EB", position: "relative" },
-                                    children: [
-                                        s.jsxs("div", {
-                                            style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" },
-                                            children: [
-                                                s.jsx("span", { style: { fontSize: "20px", filter: "grayscale(100%) brightness(50%)" }, children: "🌑" }),
-                                                s.jsx("h4", { style: { margin: 0, fontWeight: "700", color: "#374151", fontSize: "1rem" }, children: "AMANTA" })
-                                            ]
-                                        }),
-                                        s.jsxs("div", {
-                                            style: { display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px" },
-                                            children: [
-                                                "Mah", "Guj", "Karn", "AP", "Tel", "TN", "Kerala", "Goa"
-                                            ].map(state => s.jsx("span", { key: state, style: { background: "#E5E7EB", color: "#4B5563", fontSize: "0.7rem", fontWeight: "600", padding: "2px 8px", borderRadius: "10px" }, children: state }))
-                                        }),
-                                        s.jsxs("div", {
-                                            style: { background: "#FFFFFF", padding: "10px 14px", borderRadius: "10px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" },
-                                            children: [
-                                                s.jsx("div", { style: { fontSize: "0.75rem", color: "#9CA3AF", textTransform: "uppercase", fontWeight: "600", letterSpacing: "0.05em", marginBottom: "2px" }, children: "Current Month" }),
-                                                s.jsx("div", { style: { fontSize: "1.05rem", fontWeight: "700", color: "#111827" }, children: r.samvatDetails?.chandramasa?.amanta || "N/A" }),
-                                                s.jsx("div", { style: { fontSize: "0.85rem", color: "#4B5563", marginTop: "4px" }, children: `${r.tithi?.paksha || ''} Paksha, ${r.tithi?.name || ''}` })
-                                            ]
-                                        })
-                                    ]
-                                })
-                            ]
-                        })
-                    ]
-                }),
                 (() => {
                     let totalMatches = 0;
                     const renderedClusters = yearlyFestivalsData.map((mObj, idx) => {
@@ -3452,6 +3366,100 @@ const renderUpcomingTithis = () => {
                     })
                 ]
             }),
+
+            // --- PURNIMANTA VS AMANTA DUAL CALENDAR ENGINE UI ---
+                s.jsxs("div", {
+                    style: {
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85))",
+                        backdropFilter: "blur(16px)",
+                        border: "1px solid rgba(255, 255, 255, 0.6)",
+                        boxShadow: "0 8px 32px rgba(0, 0, 0, 0.08)",
+                        borderRadius: "20px",
+                        padding: "20px",
+                        margin: "0 16px 24px 16px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "16px",
+                        position: "relative",
+                        overflow: "hidden"
+                    },
+                    children: [
+                        s.jsx("div", {
+                            style: { position: "absolute", top: "-50%", left: "-50%", width: "200%", height: "200%", background: "linear-gradient(to bottom right, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%)", transform: "rotate(30deg)", pointerEvents: "none" }
+                        }),
+                        s.jsxs("div", {
+                            style: { display: "flex", alignItems: "center", gap: "10px", zIndex: 1 },
+                            children: [
+                                s.jsx("span", { style: { fontSize: "24px" }, children: "🌗" }),
+                                s.jsx("h3", { style: { margin: 0, fontSize: "1.1rem", fontWeight: "700", color: "#1F2937" }, children: "Current Lunar Month Conventions" })
+                            ]
+                        }),
+                        s.jsx("p", {
+                            style: { margin: 0, fontSize: "0.85rem", color: "#6B7280", lineHeight: "1.4", zIndex: 1 },
+                            children: "In India, two primary lunar month ending traditions exist. During Krishna Paksha, the Purnimanta month is exactly 1 month ahead. During Shukla Paksha, both traditions share identical month names."
+                        }),
+                        s.jsxs("div", {
+                            style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px", zIndex: 1 },
+                            children: [
+                                // Purnimanta Card
+                                s.jsxs("div", {
+                                    style: { background: "#FFFBEB", borderRadius: "16px", padding: "16px", border: "1px solid #FDE68A", position: "relative" },
+                                    children: [
+                                        s.jsxs("div", {
+                                            style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" },
+                                            children: [
+                                                s.jsx("span", { style: { fontSize: "20px" }, children: "🌕" }),
+                                                s.jsx("h4", { style: { margin: 0, fontWeight: "700", color: "#92400E", fontSize: "1rem" }, children: "PURNIMANTA" })
+                                            ]
+                                        }),
+                                        s.jsxs("div", {
+                                            style: { display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px" },
+                                            children: [
+                                                "UP", "Bihar", "Raj", "MP", "Haryana", "Punjab", "HP", "Odisha"
+                                            ].map(state => s.jsx("span", { key: state, style: { background: "#FEF3C7", color: "#B45309", fontSize: "0.7rem", fontWeight: "600", padding: "2px 8px", borderRadius: "10px" }, children: state }))
+                                        }),
+                                        s.jsxs("div", {
+                                            style: { background: "#FFFFFF", padding: "10px 14px", borderRadius: "10px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" },
+                                            children: [
+                                                s.jsx("div", { style: { fontSize: "0.75rem", color: "#9CA3AF", textTransform: "uppercase", fontWeight: "600", letterSpacing: "0.05em", marginBottom: "2px" }, children: "Current Month" }),
+                                                s.jsx("div", { style: { fontSize: "1.05rem", fontWeight: "700", color: "#111827" }, children: r.samvatDetails?.chandramasa?.purnimanta || "N/A" }),
+                                                s.jsx("div", { style: { fontSize: "0.85rem", color: "#4B5563", marginTop: "4px" }, children: `${r.tithi?.paksha || ''} Paksha, ${r.tithi?.name || ''}` })
+                                            ]
+                                        })
+                                    ]
+                                }),
+                                // Amanta Card
+                                s.jsxs("div", {
+                                    style: { background: "#F3F4F6", borderRadius: "16px", padding: "16px", border: "1px solid #E5E7EB", position: "relative" },
+                                    children: [
+                                        s.jsxs("div", {
+                                            style: { display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" },
+                                            children: [
+                                                s.jsx("span", { style: { fontSize: "20px", filter: "grayscale(100%) brightness(50%)" }, children: "🌑" }),
+                                                s.jsx("h4", { style: { margin: 0, fontWeight: "700", color: "#374151", fontSize: "1rem" }, children: "AMANTA" })
+                                            ]
+                                        }),
+                                        s.jsxs("div", {
+                                            style: { display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px" },
+                                            children: [
+                                                "Mah", "Guj", "Karn", "AP", "Tel", "TN", "Kerala", "Goa"
+                                            ].map(state => s.jsx("span", { key: state, style: { background: "#E5E7EB", color: "#4B5563", fontSize: "0.7rem", fontWeight: "600", padding: "2px 8px", borderRadius: "10px" }, children: state }))
+                                        }),
+                                        s.jsxs("div", {
+                                            style: { background: "#FFFFFF", padding: "10px 14px", borderRadius: "10px", boxShadow: "0 2px 4px rgba(0,0,0,0.02)" },
+                                            children: [
+                                                s.jsx("div", { style: { fontSize: "0.75rem", color: "#9CA3AF", textTransform: "uppercase", fontWeight: "600", letterSpacing: "0.05em", marginBottom: "2px" }, children: "Current Month" }),
+                                                s.jsx("div", { style: { fontSize: "1.05rem", fontWeight: "700", color: "#111827" }, children: r.samvatDetails?.chandramasa?.amanta || "N/A" }),
+                                                s.jsx("div", { style: { fontSize: "0.85rem", color: "#4B5563", marginTop: "4px" }, children: `${r.tithi?.paksha || ''} Paksha, ${r.tithi?.name || ''}` })
+                                            ]
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                }),
+
 
             // Active Regional Calendar Bar (When a specific region is filtered)
             selectedRegionalCal !== "all" && s.jsxs("div", {
@@ -6800,7 +6808,7 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mrDiff < 0) mrDiff += 360;
                     const mrTNum = Math.floor(mrDiff / 12) + 1;
                     const moonriseObj = { isShukla: mrTNum <= 15, tithiInPaksha: mrTNum <= 15 ? mrTNum : mrTNum - 15 };
-                    if (mUdaya === 7 && !udaya.isShukla && udaya.tithiInPaksha === 4) festivals.push("Karwa Chauth");
+                    if (mMoonrise === 7 && !moonriseObj.isShukla && moonriseObj.tithiInPaksha === 4) festivals.push("Karwa Chauth");
                     if (mUdaya === 7 && !udaya.isShukla && udaya.tithiInPaksha === 8) festivals.push("Ahoi Ashtami");
                     if (mNishita === 7 && !nishita.isShukla && nishita.tithiInPaksha === 14) festivals.push("Naraka Chaturdashi", "Kali Puja");
                     if (mPradosha === 7 && !pradosha.isShukla && pradosha.tithiInPaksha === 15) festivals.push("Deepavali (ଦୀପାବଳି)", "Lakshmi Puja", "Paya Shraddha");
@@ -6895,6 +6903,13 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                 if (curMonth === 10 && curDateNum === 2) festivals.push("Mahatma Gandhi Jayanti");
                 if (curMonth === 11 && curDateNum === 14) festivals.push("Children's Day (Jawaharlal Nehru Jayanti)");
                 if (curMonth === 11 && curDateNum === 26) festivals.push("Constitution Day of India / Samvidhan Diwas");
+                if (curMonth === 1 && curDateNum === 30) festivals.push("Martyrs' Day / Shaheed Diwas");
+                if (curMonth === 2 && curDateNum === 28) festivals.push("National Science Day");
+                if (curMonth === 7 && curDateNum === 26) festivals.push("Kargil Vijay Diwas");
+                if (curMonth === 8 && curDateNum === 29) festivals.push("National Sports Day (Major Dhyan Chand Jayanti)");
+                if (curMonth === 9 && curDateNum === 14) festivals.push("Hindi Diwas");
+                if (curMonth === 10 && curDateNum === 31) festivals.push("Rashtriya Ekta Diwas (Sardar Vallabhbhai Patel Jayanti)");
+                if (curMonth === 12 && curDateNum === 23) festivals.push("Kisan Diwas / National Farmers Day");
                 if (curMonth === 12 && curDateNum === 25) festivals.push("Christmas ✝️");
                 if (curMonth === 12 && curDateNum === 26) festivals.push("Feast of St. Stephen");
 
@@ -6939,9 +6954,9 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                 const g_y = d.getFullYear();
 
                 // Simple Kuwaiti algorithm approximation / Astronomical Synodic Mapping
-                let mJD = Astro.MakeTime(d).ut;
+                const trueJD = Astro.MakeTime(d).ut + 2451545.0;
                 // Hijri epoch: 1948439.5
-                const hijriDays = Math.floor(mJD - 1948438.5) - 2; // -2 empirical calibration for typical Indian sighting
+                const hijriDays = Math.floor(trueJD - 1948438.5) - 1; // -1 empirical calibration for typical Indian sighting
                 const hijriYear = Math.floor((30 * hijriDays + 10646) / 10631);
                 let daysLeft = hijriDays - Math.floor((10631 * hijriYear - 10617) / 30);
                 let hMonth = Math.floor((11 * daysLeft + 330) / 325);
@@ -6967,6 +6982,45 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                 if (mUdaya === 5 && udaya.isShukla && udaya.tithiInPaksha === 5) festivals.push("Samvatsari / Kshamavani (Jain) 🌸");
                 if (mUdaya === 11 && udaya.isShukla && udaya.tithiInPaksha === 1) festivals.push("Losar (Tibetan New Year) 🌸");
                 if (mUdaya === 9 && udaya.isShukla && udaya.tithiInPaksha === 7) festivals.push("Guru Gobind Singh Jayanti (Sikh) 🌸");
+
+                // Additional Regional & Sikh Festivals
+                if (mUdaya === 0 && udaya.isShukla && (udaya.tithiInPaksha === 1 || udaya.tithiInPaksha === 2)) festivals.push("Cheti Chand / Jhulelal Jayanti (Sindhi New Year)");
+                if (mUdaya === 0 && udaya.isShukla && udaya.tithiInPaksha === 1) festivals.push("Navreh (Kashmiri New Year)");
+                if (mUdaya === 3 && curMonth === 7 && d.getDay() === 0) festivals.push("Bonalu (Telangana)"); // Sundays in Ashadha
+                if (mUdaya === 4 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Narali Purnima (Coconut Day)");
+                if ((mUdaya === 4 || mUdaya === 5) && !udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Pola / Bail Pola (Maharashtra)");
+                if (mUdaya === 5 && udaya.isShukla && udaya.tithiInPaksha >= 7 && udaya.tithiInPaksha <= 9) festivals.push("Jyeshtha Gauri Avahan & Pujan");
+                if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 6) festivals.push("Skanda Sashti / Soorasamharam");
+                if (mUdaya === 3 && udaya.isShukla && udaya.tithiInPaksha === 8) festivals.push("Kharchi Puja (Tripura)");
+                if (mUdaya === 11 && !udaya.isShukla && udaya.tithiInPaksha === 13) festivals.push("Herath (Kashmiri Maha Shivaratri Eve)");
+                if (mUdaya === 11 && !udaya.isShukla && udaya.tithiInPaksha === 1) festivals.push("Hola Mohalla (Sikh)");
+                if (mUdaya === 8 && udaya.isShukla && udaya.tithiInPaksha === 5) festivals.push("Guru Tegh Bahadur Martyrdom Day (Sikh)");
+                if (mUdaya === 2 && udaya.isShukla && udaya.tithiInPaksha === 4) festivals.push("Guru Arjan Dev Shaheedi Diwas (Sikh)");
+
+                // Bathukamma (Ashwina Amavasya to Durgashtami)
+                if ((mUdaya === 5 && !udaya.isShukla && udaya.tithiInPaksha === 15) || (mUdaya === 6 && udaya.isShukla && udaya.tithiInPaksha <= 8)) {
+                    festivals.push("Bathukamma (Telangana)");
+                }
+
+                // Solar Regional Festivals
+                // Onam: Shravana Nakshatra in Simha Solar Month
+                const nakToday = window.Astronomy.Ecliptic(window.Astronomy.GeoVector(window.Astronomy.Body.Moon, Astro.MakeTime(d), true)).elon / (360/27);
+                if (rToday === 4 && Math.floor(nakToday) === 21) festivals.push("Onam / Thiruvonam (Kerala)"); // Shravana Nakshatra is 22nd, index 21
+
+                // Thaipusam: Pushya Nakshatra in Makara Solar Month on Purnima
+                if (rToday === 9 && udaya.isShukla && udaya.tithiInPaksha === 15 && Math.floor(nakToday) === 7) festivals.push("Thaipusam (Tamil Nadu/Kerala)"); // Pushya is index 7
+
+                // Panguni Uthiram: Uttara Phalguni Nakshatra in Meena Solar Month on Purnima
+                if (rToday === 11 && udaya.isShukla && udaya.tithiInPaksha === 15 && Math.floor(nakToday) === 11) festivals.push("Panguni Uthiram"); // Uttara Phalguni is index 11
+
+                // Aadi Perukku: 18th day of Karka solar month
+                // This requires tracking solar ingress exactly, but we can approximate it as roughly 18 days after Karka Sankranti
+                // Assuming Karka Sankranti is around July 16, Aadi Perukku is typically Aug 2/3.
+                if (curMonth === 8 && (curDateNum === 2 || curDateNum === 3)) festivals.push("Aadi Perukku");
+
+                // Ambubachi Mela: Sun enters 7 degrees of Mithuna
+                const sunDeg = sunAtSr % 30;
+                if (rToday === 2 && sunDeg >= 6.5 && sunDeg < 7.5) festivals.push("Ambubachi Mela Begins (Assam)");
 
                 return [...new Set(festivals)];
             } catch (e) {
