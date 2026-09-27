@@ -2288,6 +2288,34 @@ const FestivalsVratsView = ({data: r}) => {
         let mEnd = new Date(sunrise.getTime() + 0.5 * dayDur);
         let rules = [];
         let katha = "Devotees observe fasting, sacred ritual bath, and offer prayers with pure devotion to receive divine blessings, peace, and prosperity.";
+        let dualCalendarSubtitle = "";
+        const isKrishnaFest = [
+            "Janmashtami", "Diwali", "Deepavali", "Maha Shivaratri", "Karwa Chauth",
+            "Pitru Paksha", "Jivitputrika", "Jitiya", "Ahoi Ashtami", "Naraka Chaturdashi",
+            "Dhanteras", "Kali Puja", "Kamika Ekadashi", "Aja Ekadashi", "Indira Ekadashi",
+            "Rama Ekadashi", "Utpanna Ekadashi", "Saphala Ekadashi", "Shattila Ekadashi",
+            "Vijaya Ekadashi", "Papamochani Ekadashi", "Varuthini Ekadashi", "Apara Ekadashi", "Yogini Ekadashi"
+        ].some(n => fName.includes(n));
+
+        const isShuklaFest = [
+            "Ganesh", "Navratri", "Ram Navami", "Durga Puja", "Dussehra",
+            "Gudi Padwa", "Ugadi", "Akshaya Tritiya", "Ratha Yatra", "Raksha Bandhan",
+            "Vasant Panchami", "Saraswati Puja", "Holi", "Devutthana"
+        ].some(n => fName.includes(n));
+
+        if (r && r.samvatDetails && r.samvatDetails.chandramasa) {
+            const { purnimanta, amanta } = r.samvatDetails.chandramasa;
+            const pM = purnimanta.split(" - ")[0];
+            const aM = amanta.split(" - ")[0];
+            if (isKrishnaFest || (r.tithi && r.tithi.paksha === "Krishna")) {
+                const tName = r.tithi && r.tithi.name ? r.tithi.name : "Paksha";
+                dualCalendarSubtitle = `${pM} (Purnimanta) / ${aM} (Amanta), Krishna ${tName}`;
+            } else if (isShuklaFest || (r.tithi && r.tithi.paksha === "Shukla")) {
+                const tName = r.tithi && r.tithi.name ? r.tithi.name : "Paksha";
+                dualCalendarSubtitle = `${pM} Shukla ${tName} (Identical in Purnimanta & Amanta)`;
+            }
+        }
+
 
         // 1. Ganesh Chaturthi
         if (fName.includes("Ganesh") || fName.includes("Ganesha") || fName.includes("Vinayaka")) {
@@ -2549,6 +2577,7 @@ const FestivalsVratsView = ({data: r}) => {
         return {
             name: fName,
             dateStr: fest.dateStr || d.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
+            dualCalendarSubtitle: dualCalendarSubtitle || "",
             tithiStr: fest.tithiStr || "",
             primaryTitle,
             primaryRange: fmtRange(mStart, mEnd),
@@ -2660,20 +2689,33 @@ const FestivalsVratsView = ({data: r}) => {
         }
 
         if (festCategory === "all") return true;
-        if (festCategory === "ekadashi") {
-            return n.includes("ekadashi") || n.includes("ଏକାଦଶୀ");
+        if (festCategory === "national") {
+            return [
+                "republic", "independence", "gandhi", "ambedkar", "netaji", "parakram",
+                "vivekananda", "youth day", "workers' day", "may day", "teachers' day",
+                "children's day", "constitution", "samvidhan"
+            ].some(k => n.includes(k));
+        }
+        if (festCategory === "hindu") {
+            const nonHindu = ["eid", "muharram", "shab", "ramadan", "laylat", "easter", "good friday", "palm sunday", "ash wednesday", "maundy", "ascension", "pentecost", "christmas", "st. stephen", "guru nanak", "guru gobind", "mahavira", "paryushana", "samvatsari", "buddha", "vesak"];
+            const isNonHindu = nonHindu.some(k => n.includes(k));
+            const isNational = ["republic", "independence", "gandhi", "ambedkar", "netaji", "parakram", "vivekananda", "youth day", "workers' day", "may day", "teachers' day", "children's day", "constitution", "samvidhan"].some(k => n.includes(k));
+            return !isNonHindu && !isNational;
         }
         if (festCategory === "moon") {
-            return n.includes("purnima") || n.includes("amavasya") || n.includes("amavas") || n.includes("ପୂର୍ଣ୍ଣିମା") || n.includes("ଅମାବାସ୍ୟା");
+            return n.includes("ekadashi") || n.includes("ଏକାଦଶୀ") || n.includes("purnima") || n.includes("amavasya") || n.includes("amavas") || n.includes("ପୂର୍ଣ୍ଣିମା") || n.includes("ଅମାବାସ୍ୟା") || n.includes("grahan") || n.includes("eclipse") || n.includes("ଗ୍ରହଣ");
         }
         if (festCategory === "sankranti") {
-            return n.includes("sankranti") || n.includes("pongal") || n.includes("ସଂକ୍ରାନ୍ତି") || n.includes("ରଜ") || n.includes("raja");
+            return n.includes("sankranti") || n.includes("pongal") || n.includes("ସଂକ୍ରାନ୍ତି") || n.includes("ରଜ") || n.includes("raja") || n.includes("bihu") || n.includes("vishwakarma") || n.includes("onam") || n.includes("vishu") || n.includes("boishakh") || n.includes("puthandu") || n.includes("vaisakhi");
         }
-        if (festCategory === "eclipse") {
-            return n.includes("grahan") || n.includes("eclipse") || n.includes("ଗ୍ରହଣ");
+        if (festCategory === "islamic") {
+            return ["eid", "muharram", "shab", "ramadan", "laylat"].some(k => n.includes(k));
         }
-        if (festCategory === "vrat") {
-            return n.includes("jayanti") || n.includes("ଜୟନ୍ତୀ") || n.includes("vrat") || n.includes("brata") || n.includes("ବ୍ରତ") || n.includes("puja") || n.includes("ପୂଜା") || n.includes("navratri") || n.includes("ନବରାତ୍ରୀ") || n.includes("chaturthi") || n.includes("ଚତୁର୍ଥୀ") || n.includes("janmashtami") || n.includes("ଜନ୍ମାଷ୍ଟମୀ") || n.includes("shivaratri") || n.includes("ଶିବରାତ୍ରି");
+        if (festCategory === "christian") {
+            return ["easter", "good friday", "palm sunday", "ash wednesday", "maundy", "ascension", "pentecost", "christmas", "st. stephen", "new year's day"].some(k => n.includes(k));
+        }
+        if (festCategory === "other") {
+            return ["guru nanak", "guru gobind", "mahavira", "paryushana", "samvatsari", "buddha", "vesak"].some(k => n.includes(k));
         }
         return true;
     };
@@ -2884,6 +2926,57 @@ const FestivalsVratsView = ({data: r}) => {
             return "Auspicious Hindu Observance";
         }
     };
+
+    // Render dual calendar
+const renderDualCalendarCard = () => {
+    if (!r || !r.samvatDetails || !r.samvatDetails.chandramasa) return null;
+    const { purnimanta, amanta } = r.samvatDetails.chandramasa;
+    const pMonth = purnimanta.split(" - ")[0];
+    const aMonth = amanta.split(" - ")[0];
+    const paksha = r.tithi && r.tithi.paksha ? r.tithi.paksha : "Shukla";
+    const tithiName = r.tithi && r.tithi.name ? r.tithi.name : "";
+
+    return s.jsxs("div", {
+        className: "panchang-card-v10 dual-cal-card",
+        style: { marginBottom: "16px", background: "linear-gradient(135deg, rgba(30,58,138,0.05) 0%, rgba(59,130,246,0.05) 100%)", border: "1px solid rgba(59,130,246,0.2)" },
+        children: [
+            s.jsxs("div", { className: "flex-row-180", style: { marginBottom: "12px", borderBottom: "1px solid rgba(0,0,0,0.05)", paddingBottom: "10px" }, children: [
+                s.jsx("div", { className: "panchang-box-v15 shadow-xs", style: { background: "#DBEAFE", color: "#1D4ED8" }, children: s.jsx("i", { className: "fa-solid fa-moon" }) }),
+                s.jsx("span", { className: "text-label-173", style: { color: "#1E3A8A" }, children: "Lunar Month Conventions in India" })
+            ]}),
+            s.jsxs("div", {
+                style: { display: "flex", gap: "12px", flexWrap: "wrap" },
+                children: [
+                    s.jsxs("div", {
+                        style: { flex: "1", minWidth: "200px", padding: "12px", background: "#FFF", borderRadius: "8px", border: "1px solid #E5E7EB", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" },
+                        children: [
+                            s.jsx("div", { style: { color: "#D97706", fontSize: "0.85rem", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }, children: "🌕 Purnimanta (North, Central, Odisha)" }),
+                            s.jsx("div", { style: { fontSize: "1.15rem", fontWeight: "800", color: "#111827", marginBottom: "2px" }, children: `${pMonth} ${paksha} ${tithiName}` }),
+                            s.jsx("div", { style: { fontSize: "0.8rem", color: "#6B7280" }, children: "Month ends on Full Moon (Purnima)" })
+                        ]
+                    }),
+                    s.jsxs("div", {
+                        style: { flex: "1", minWidth: "200px", padding: "12px", background: "#FFF", borderRadius: "8px", border: "1px solid #E5E7EB", boxShadow: "0 1px 3px rgba(0,0,0,0.05)" },
+                        children: [
+                            s.jsx("div", { style: { color: "#2563EB", fontSize: "0.85rem", fontWeight: "700", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "4px" }, children: "🌑 Amanta (South, West, Gujarat)" }),
+                            s.jsx("div", { style: { fontSize: "1.15rem", fontWeight: "800", color: "#111827", marginBottom: "2px" }, children: `${aMonth} ${paksha} ${tithiName}` }),
+                            s.jsx("div", { style: { fontSize: "0.8rem", color: "#6B7280" }, children: "Month ends on New Moon (Amavasya)" })
+                        ]
+                    })
+                ]
+            }),
+            s.jsx("div", {
+                style: { fontSize: "0.85rem", marginTop: "12px", color: "#4B5563", background: "rgba(255,255,255,0.6)", padding: "8px", borderRadius: "6px" },
+                children: s.jsxs("strong", { children: [
+                    s.jsx("i", { className: "fa-solid fa-circle-info", style: { marginRight: "6px", color: "#3B82F6" } }),
+                    paksha === "Krishna"
+                        ? "During Krishna Paksha, Purnimanta month is 1 month ahead. During Shukla Paksha, both conventions have identical month names."
+                        : "During Shukla Paksha, both conventions have identical month names. During Krishna Paksha, Purnimanta month is 1 month ahead."
+                ]})
+            })
+        ]
+    });
+};
 
     const renderTodayFestivals = () => {
         const events = r.significantEvents && r.significantEvents.length > 0 ? r.significantEvents : [];
@@ -3382,11 +3475,13 @@ const FestivalsVratsView = ({data: r}) => {
                 className: "fest-pill-bar",
                 children: [
                     { id: "all", label: "🚩 All Festivals" },
-                    { id: "ekadashi", label: "🪷 Ekadashi" },
-                    { id: "moon", label: "🌕 Purnima & Amavasya" },
-                    { id: "sankranti", label: "☀️ Sankranti" },
-                    { id: "eclipse", label: "🌒 Eclipses" },
-                    { id: "vrat", label: "🏹 Jayanti & Vrats" }
+                    { id: "national", label: "🏛️ National & Govt" },
+                    { id: "hindu", label: "🪔 Hindu & Vrats" },
+                    { id: "moon", label: "🪷 Ekadashi & Moon" },
+                    { id: "sankranti", label: "☀️ Sankranti & Harvest" },
+                    { id: "islamic", label: "🌙 Islamic" },
+                    { id: "christian", label: "✝️ Christian" },
+                    { id: "other", label: "🌸 Sikh, Jain & Buddhist" }
                 ].map(p => s.jsx("button", {
                     key: p.id,
                     type: "button",
@@ -3396,6 +3491,7 @@ const FestivalsVratsView = ({data: r}) => {
                 }))
             }),
 
+            renderDualCalendarCard(),
             viewMode === "month" ? s.jsxs(s.Fragment, {
                 children: [
                     renderTodayFestivals(),
@@ -3484,7 +3580,8 @@ const FestivalsVratsView = ({data: r}) => {
                                         s.jsxs("div", {
                                             children: [
                                                 s.jsx("h2", { style: { fontFamily: "'Outfit', sans-serif", fontSize: "1.2rem", fontWeight: "900", lineHeight: "1.2" }, children: dData.name }),
-                                                s.jsx("p", { style: { fontSize: "0.82rem", opacity: "0.9", fontWeight: "700", marginTop: "2px" }, children: dData.dateStr })
+                                                s.jsx("p", { style: { fontSize: "0.82rem", opacity: "0.9", fontWeight: "700", marginTop: "2px" }, children: dData.dateStr }),
+                                                (dData.dualCalendarSubtitle ? s.jsx("p", { style: { fontSize: "0.75rem", opacity: "0.9", color: "#FCD34D", marginTop: "4px" }, children: dData.dualCalendarSubtitle }) : null)
                                             ]
                                         }),
                                         s.jsx("button", {
@@ -6283,6 +6380,123 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
         // --- UNIVERSAL DYNAMIC ASTRONOMICAL FESTIVAL ENGINE (ANY YEAR, ANY LAT/LON) ---
         // 100% mathematical, zero date hardcoding. Derives exact solar & lunar months,
         // Madhyahna / Nishita / Pradosha / Udaya Kaala intervals, and True Solar Ingress (Sankranti).
+                // Christian Computus & Fixed Feasts Engine
+        const computeChristianFeasts = (y) => {
+            const a = y % 19;
+            const b = Math.floor(y / 100);
+            const c = y % 100;
+            const d = Math.floor(b / 4);
+            const e = b % 4;
+            const f = Math.floor((b + 8) / 25);
+            const g = Math.floor((b - f + 1) / 3);
+            const h = (19 * a + b - d - g + 15) % 30;
+            const i = Math.floor(c / 4);
+            const k = c % 4;
+            const l = (32 + 2 * e + 2 * i - h - k) % 7;
+            const m = Math.floor((a + 11 * h + 22 * l) / 451);
+            const month = Math.floor((h + l - 7 * m + 114) / 31) - 1; // 0-indexed month
+            const day = ((h + l - 7 * m + 114) % 31) + 1;
+
+            const easterSunday = new Date(y, month, day);
+            const goodFriday = new Date(easterSunday.getTime() - 2 * 86400000);
+            const palmSunday = new Date(easterSunday.getTime() - 7 * 86400000);
+            const maundyThursday = new Date(easterSunday.getTime() - 3 * 86400000);
+            const ashWednesday = new Date(easterSunday.getTime() - 46 * 86400000);
+            const ascensionDay = new Date(easterSunday.getTime() + 39 * 86400000);
+            const pentecost = new Date(easterSunday.getTime() + 49 * 86400000);
+
+            return {
+                easterSunday, goodFriday, palmSunday, maundyThursday, ashWednesday, ascensionDay, pentecost
+            };
+        };
+
+        const christianAndNationalDaysCache = {};
+        const getChristianAndNationalDays = (targetDate) => {
+            const y = targetDate.getFullYear();
+            const m = targetDate.getMonth();
+            const dNum = targetDate.getDate();
+
+            if (!christianAndNationalDaysCache[y]) {
+                const feasts = computeChristianFeasts(y);
+                christianAndNationalDaysCache[y] = {
+                    feasts,
+                    nationalDays: {
+                        "0-26": ["Republic Day"],
+                        "0-23": ["Netaji Subhas Chandra Bose Jayanti / Parakram Diwas"],
+                        "0-12": ["Swami Vivekananda Jayanti / National Youth Day"],
+                        "3-14": ["Dr. B.R. Ambedkar Jayanti"],
+                        "4-1": ["International Workers' Day / May Day"],
+                        "7-15": ["Independence Day"],
+                        "8-5": ["Teachers' Day (Dr. Radhakrishnan Jayanti)"],
+                        "9-2": ["Mahatma Gandhi Jayanti"],
+                        "10-14": ["Children's Day (Jawaharlal Nehru Jayanti)"],
+                        "10-26": ["Constitution Day of India / Samvidhan Diwas"],
+                        "11-25": ["Christmas"],
+                        "11-26": ["Feast of St. Stephen"],
+                        "0-1": ["New Year's Day"]
+                    }
+                };
+            }
+
+            const cache = christianAndNationalDaysCache[y];
+            const fList = [];
+            const key = `${m}-${dNum}`;
+
+            if (cache.nationalDays[key]) {
+                fList.push(...cache.nationalDays[key]);
+            }
+
+            const checkMatch = (dt, name) => {
+                if (dt.getMonth() === m && dt.getDate() === dNum) fList.push(name);
+            };
+
+            checkMatch(cache.feasts.easterSunday, "Easter Sunday");
+            checkMatch(cache.feasts.goodFriday, "Good Friday");
+            checkMatch(cache.feasts.palmSunday, "Palm Sunday");
+            checkMatch(cache.feasts.maundyThursday, "Maundy Thursday");
+            checkMatch(cache.feasts.ashWednesday, "Ash Wednesday");
+            checkMatch(cache.feasts.ascensionDay, "Ascension Day");
+            checkMatch(cache.feasts.pentecost, "Pentecost");
+
+            return fList;
+        };
+
+
+                // 100% Mathematical Islamic Hijri Astronomical Engine
+        // Approximate calculation based on the standard astronomical tabular Islamic calendar
+        const computeHijriMonth = (targetDate) => {
+            let jd = (targetDate.getTime() / 86400000.0) + 2440587.5;
+            jd = Math.floor(jd) + 0.5;
+            let l = jd - 1948440 + 10632;
+            let n = Math.floor((l - 1) / 10631);
+            l = l - 10631 * n + 354;
+            let j = (Math.floor((10985 - l) / 5316)) * (Math.floor((50 * l) / 17719)) + (Math.floor(l / 5670)) * (Math.floor((43 * l) / 15238));
+            l = l - (Math.floor((30 - j) / 15)) * (Math.floor((17719 * j) / 50)) - (Math.floor(j / 16)) * (Math.floor((15238 * j) / 43)) + 29;
+            let m = Math.floor((24 * l) / 709);
+            let d = l - Math.floor((709 * m) / 24);
+            let y = 30 * n + j - 30;
+
+            return { month: m, day: d, year: y };
+        };
+
+        const getIslamicFestivals = (targetDate) => {
+            const hijri = computeHijriMonth(targetDate);
+            const m = hijri.month;
+            const d = hijri.day;
+            const fList = [];
+
+            if (m === 10 && d === 1) fList.push("Eid-ul-Fitr (ମିଠା ଇଦ୍ / रमज़ान ईद)");
+            if (m === 12 && d === 10) fList.push("Eid-ul-Adha / Bakrid (ବକ୍ରିଦ୍ / बकरीद)");
+            if (m === 1 && d === 10) fList.push("Day of Ashura / Muharram (ମୁହରମ୍)");
+            if (m === 3 && d === 12) fList.push("Milad-un-Nabi / Mawlid (ଇଦ୍-ଏ-ମିଲାଦ)");
+            if (m === 8 && d === 15) fList.push("Shab-e-Barat (ଶବ୍-ଏ-ବରାତ)");
+            if (m === 9 && d === 27) fList.push("Laylat al-Qadr (ଶବ୍-ଏ-କଦ୍ର)");
+            if (m === 9 && d === 1) fList.push("First Day of Ramadan Fasting");
+
+            return fList;
+        };
+
+
         const detectUniversalFestivals = (targetDate, lat, lng) => {
             if (!window.Astronomy) return [];
             try {
@@ -6698,6 +6912,16 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mNishita === 11 && !nishita.isShukla && nishita.tithiInPaksha === 14) festivals.push("Maha Shivaratri (ମହା ଶିବରାତ୍ରି / ଜାଗର ଯାତ୍ରା)");
                     if (mPradosha === 11 && pradosha.isShukla && pradosha.tithiInPaksha === 15) festivals.push("Holika Dahan");
                     if (mUdaya === 11 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Dola Purnima / Dola Yatra (ଦୋଳ ପୂର୍ଣ୍ଣିମା / ଦୋଳ ଯାତ୍ରା)", "Sri Chaitanya Jayanti", "Gaura Purnima (গৌর পূর্ণিমা / ISKCON Appearance Day)");
+
+                    // Sikh, Jain & Buddhist Dynamic Lunar Festivals
+                    if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Guru Nanak Jayanti (Gurpurab)");
+                    if (mUdaya === 9 && udaya.isShukla && udaya.tithiInPaksha === 7) festivals.push("Guru Gobind Singh Jayanti");
+                    if (mUdaya === 0 && udaya.isShukla && udaya.tithiInPaksha === 13) festivals.push("Mahavira Jayanti");
+                    if (mUdaya === 5 && !udaya.isShukla && udaya.tithiInPaksha === 12) festivals.push("Paryushana Parva Begins (Jain)");
+                    if (mUdaya === 5 && udaya.isShukla && udaya.tithiInPaksha === 4) festivals.push("Samvatsari / Kshamavani");
+                    if (mPradosha === 7 && !pradosha.isShukla && pradosha.tithiInPaksha === 15) festivals.push("Mahavira Nirvana Swami");
+                    if (mUdaya === 1 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Buddha Purnima / Vesak");
+
                 }
 
                 // 5. EXACT DYNAMIC SOLAR INGRESS (SANKRANTI) DETECTION
@@ -6742,6 +6966,35 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     }
                 }
 
+
+
+
+
+                // Additional Harvest Festivals based on Sankranti
+                if (rToday !== rNext) {
+                    if (rNext === 9) festivals.push("Magh Bihu", "Makaravilakku"); // Makara
+                    if (rNext === 0) festivals.push("Poila Boishakh", "Puthandu", "Vaisakhi", "Bohag Bihu / Rongali Bihu", "Vishu"); // Mesha
+                    if (rNext === 5) festivals.push("Vishwakarma Puja"); // Kanya
+                    if (rNext === 6) festivals.push("Kati Bihu"); // Tula
+                }
+
+                // Onam / Thiruvonam (Kerala): Moon in Shravana (Thiruvonam) Nakshatra in Chingam (Solar Simha month)
+                if (rToday === 4) { // Solar Simha month
+                    // Use sidereal moon to calculate Nakshatra precisely
+                    const t_sr = Astro.MakeTime(sr);
+                    const geoMoon = Astro.GeoVector(Astro.Body.Moon, t_sr, true);
+                    const mElon = Astro.Ecliptic(geoMoon).elon;
+                    const sidMoon = ((mElon - getTrueLahiriAyanamsa(t_sr)) % 360 + 360) % 360;
+                    const nak = Math.floor(sidMoon / (360/27));
+                    if (nak === 21) { // 21 is Shravana Nakshatra
+                        festivals.push("Onam / Thiruvonam");
+                    }
+                }
+
+                const islamicFests = getIslamicFestivals(d);
+                festivals.push(...islamicFests);
+                const christianAndNationalFests = getChristianAndNationalDays(d);
+                festivals.push(...christianAndNationalFests);
                 return [...new Set(festivals)];
             } catch (e) {
                 console.error("Universal Festival Engine Error:", e);
