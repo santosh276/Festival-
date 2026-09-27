@@ -6670,6 +6670,8 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mUdaya === 3 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Guru Purnima (ଗୁରୁ ପୂର୍ଣ୍ଣିମା)", "Vyasa Purnima");
 
                     // Month 4: Shravana
+                    if (mUdaya === 4 && udaya.isShukla && udaya.tithiInPaksha >= 13 && dayOfWeek === 5) festivals.push("Varalakshmi Vratam");
+
                     if (mUdaya === 4 && !udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Saptapuri Amavasya (ସପ୍ତପୁରୀ ଅମାବାସ୍ୟା)", "Pithori Amavasya");
                     if (dayOfWeek === 1 && mUdaya === 4) festivals.push("Shravana Somavara Vrat");
                     if (mUdaya === 4 && udaya.isShukla && udaya.tithiInPaksha === 3) festivals.push("Hariyali Teej");
@@ -6677,6 +6679,8 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mUdaya === 4 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Raksha Bandhan", "Gamha Purnima (ବଳଭଦ୍ର ଜନ୍ମ)", "Jhulan Yatra End");
 
                     // Month 5: Bhadrapada
+                    if (mUdaya === 5 && !udaya.isShukla && udaya.tithiInPaksha === 3) festivals.push("Kajari Teej (Bhadrapada (Purnimanta) / Shravana (Amanta), Krishna Tritiya)");
+
                     // Sri Krishna Janmashtami: Primary observance is on Bhadrapada Krishna Ashtami (Udaya Ashtami or Nishita Ashtami when no sunrise Ashtami)
                     const isJanmashtamiDay = (mUdaya === 5 && !udaya.isShukla && udaya.tithiInPaksha === 8) ||
                                              (mNishita === 5 && !nishita.isShukla && nishita.tithiInPaksha === 8 && udaya.tithiInPaksha !== 7);
@@ -6694,6 +6698,8 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mUdaya === 6 && !udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Mahalaya Amavasya (ମହାଳୟା ଅମାବାସ୍ୟା)");
                     if (mUdaya === 6 && udaya.isShukla && udaya.tithiInPaksha === 1) festivals.push("Sharadiya Navratri Begins (ଶାରଦୀୟ ନବରାତ୍ରୀ ଆରମ୍ଭ)", "Ghatasthapana");
                     if (mUdaya === 6 && udaya.isShukla && udaya.tithiInPaksha === 7) festivals.push("Maha Saptami");
+                    if (mUdaya === 6 && udaya.isShukla && udaya.tithiInPaksha === 7) festivals.push("Saraswati Avahan (Mula Nakshatra)");
+
                     if (mUdaya === 6 && udaya.isShukla && udaya.tithiInPaksha === 8) festivals.push("Durga Maha Ashtami (ଦୁର୍ଗା ମହାଷ୍ଟମୀ)", "Sandhi Puja");
                     if (mUdaya === 6 && udaya.isShukla && udaya.tithiInPaksha === 9) festivals.push("Maha Navami");
                     if (mAparahna === 6 && touchesAparahna(10, true)) festivals.push("Vijaya Dashami (ଦଶହରା / Dussehra)");
@@ -6705,7 +6711,10 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     // Moonrise calculation logic roughly here
                     // Assuming moonrise touches Chaturthi
                     if (mNishita === 7 && !nishita.isShukla && nishita.tithiInPaksha === 4) festivals.push("Karwa Chauth (Kartika (Purnimanta) / Ashwina (Amanta), Krishna Chaturthi)");
-                    if (mPradosha === 7 && !pradosha.isShukla && pradosha.tithiInPaksha === 13) festivals.push("Dhanteras (Dhanvantari Jayanti)");
+
+                    if (mUdaya === 7 && !udaya.isShukla && udaya.tithiInPaksha === 8) festivals.push("Ahoi Ashtami (Kartika (Purnimanta) / Ashwina (Amanta), Krishna Ashtami)");
+                    if (mUdaya === 7 && !udaya.isShukla && udaya.tithiInPaksha === 12) festivals.push("Govatsa Dwadashi (Kartika (Purnimanta) / Ashwina (Amanta), Krishna Dwadashi)");
+if (mPradosha === 7 && !pradosha.isShukla && pradosha.tithiInPaksha === 13) festivals.push("Dhanteras (Dhanvantari Jayanti)");
                     if (mNishita === 7 && !nishita.isShukla && nishita.tithiInPaksha === 14) festivals.push("Naraka Chaturdashi", "Kali Puja");
                     if (mPradosha === 7 && !pradosha.isShukla && pradosha.tithiInPaksha === 15) festivals.push("Deepavali / Lakshmi Puja (Kartika (Purnimanta) / Ashwina (Amanta), Krishna Amavasya)", "Paya Shraddha");
                     if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 1) festivals.push("Govardhan Puja", "Annakoot");
@@ -6715,6 +6724,8 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 9) festivals.push("Akshaya Navami (Amla Navami)");
                     if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha >= 11 && udaya.tithiInPaksha <= 15) festivals.push("Panchuka (ପଞ୍ଚୁକ)");
                     if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 11) festivals.push("Devutthana Ekadashi", "Tulasi Vivah Begins");
+                    if (mNishita === 7 && udaya.isShukla && nishita.tithiInPaksha === 14) festivals.push("Vaikuntha Chaturdashi");
+
                     if (mUdaya === 7 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Kartika Purnima (କାର୍ତ୍ତିକ ପୂର୍ଣ୍ଣିମା)", "Boita Bandana (ବୋଇତ ବନ୍ଦାଣ)", "Bali Yatra (ବାଲିଯାତ୍ରା)");
 
                     // Month 8: Margashirsha
@@ -6728,6 +6739,8 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                     if (mUdaya === 9 && udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Pausha Purnima (Pushyabhiseka)");
 
                     // Month 10: Magha
+                    if (mUdaya === 10 && !udaya.isShukla && udaya.tithiInPaksha === 15) festivals.push("Mauni Amavasya");
+
                     if (mMadhyahna === 10 && touchesMadhyahna(5, true)) festivals.push("Saraswati Puja (ସରସ୍ୱତୀ ପୂଜା / ବସନ୍ତ ପଞ୍ଚମୀ)");
                     if (mUdaya === 10 && udaya.isShukla && udaya.tithiInPaksha === 7) festivals.push("Ratha Saptami (Magha Saptami / Chandrabhaga Mela)");
                     if (mUdaya === 10 && udaya.isShukla && udaya.tithiInPaksha === 8) festivals.push("Bhishma Ashtami");
@@ -6863,6 +6876,24 @@ const prevSunset = prevSunsetRes ? prevSunsetRes.date : new Date(dPrev.getTime()
                 if (d.getMonth() === 11 && d.getDate() === 25) festivals.push("Christmas");
                 if (d.getMonth() === 11 && d.getDate() === 26) festivals.push("Feast of St. Stephen");
                 if (d.getMonth() === 0 && d.getDate() === 1) festivals.push("New Year's Day");
+
+
+                // Nakshatra calculation for Onam
+                const moonElon = Astro.Ecliptic(Astro.GeoVector(Astro.Body.Moon, t_noon, true)).elon;
+                let moonSid = moonElon - getTrueLahiriAyanamsa(t_noon);
+                moonSid = ((moonSid % 360) + 360) % 360;
+                const nakshatraIndex = Math.floor(moonSid / 13.333333);
+
+                // Simha month (Chingam) is when Sun is in Leo (Sidereal 120 to 150)
+                const isChingam = rToday === 4;
+                // Shravana (Thiruvonam) is Nakshatra 21 (0-indexed, so 22nd nakshatra). Shravana is index 21 (0: Ashwini ... 21: Shravana)
+                if (isChingam && nakshatraIndex === 21) {
+                    festivals.push("Onam / Thiruvonam");
+                }
+
+                // Hemis Festival (Tibetan 5th month 10th day)
+                // Roughly June/July, close to Ashadha Shukla Dashami
+                if (mUdaya === 3 && udaya.isShukla && udaya.tithiInPaksha === 10) festivals.push("Hemis Festival");
 
                 // --- 8. NATIONAL & CULTURAL DAYS (Fixed Solar) ---
                 const mDay = d.getDate();
